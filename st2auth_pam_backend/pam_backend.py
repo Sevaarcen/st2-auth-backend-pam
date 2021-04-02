@@ -17,14 +17,14 @@ from __future__ import absolute_import
 
 import os
 import logging
+import pam
 
 __all__ = [
     'PAMAuthenticationBackend'
 ]
 
-from st2auth_pam_backend.pam_ffi import auth as pam_auth
-
 LOG = logging.getLogger(__name__)
+PAM = pam.pam()
 
 PAM_DOCS_LINK = 'https://docs.stackstorm.com/install/deb.html#configure-authentication'
 NON_ROOT_ERROR_MSG = ('When using pam backend, st2auth process needs to run as "root" so it can '
@@ -58,7 +58,7 @@ class PAMAuthenticationBackend(object):
 
     def authenticate(self, username, password):
         try:
-            ret = pam_auth(username=username, password=password, service=self._service)
+            ret = PAM.authenticate(username, password)
 
             if ret:
                 LOG.info('Successfully authenticated user "%s".', username)
